@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>yt-dlp Web Interface</title>
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        body {
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+        .video-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .log-container {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .log-content {
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+
+        .progress-container {
+            margin-top: 1rem;
+        }
+
+        .progress-bar-text {
+            text-align: center;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .input-group-text {
+            min-width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header-section">
+            <h1 class="display-4">yt-dlp Web Interface</h1>
+            <p class="lead">Antarmuka web untuk mendownload video dari YouTube dan platform lainnya</p>
+        </header>
+
+        <main class="mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Masukkan URL Video</h5>
+                            <form id="urlForm">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">URL Video</span>
+                                    <input type="url" id="videoUrl" name="videoUrl" class="form-control" required placeholder="https://www.youtube.com/watch?v=...">
+                                    <button type="submit" class="btn btn-primary">Dapatkan Info Video</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="loadingSection" style="display: none;">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Mengambil informasi video...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="videoInfoSection" style="display: none;">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h3 class="h5 mb-0">Informasi Video</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-5 mb-3 mb-md-0">
+                                    <img id="videoThumbnail" src="" alt="Thumbnail Video" class="img-fluid rounded">
+                                </div>
+                                <div class="col-md-7">
+                                    <h4 id="videoTitle" class="h6"></h4>
+                                    <p><strong>Durasi:</strong> <span id="videoDuration"></span></p>
+                                    <p id="videoDescription"></p>
+                                </div>
+                            </div>
+
+                            <hr>
+                            <div class="format-selection mt-4">
+                                <h5>Pilih Format:</h5>
+                                <div class="btn-group mb-3" role="group">
+                                    <button class="btn btn-outline-primary tab-button active" data-tab="video">Video</button>
+                                    <button class="btn btn-outline-primary tab-button" data-tab="audio">Audio</button>
+                                </div>
+
+                                <div class="format-list" id="videoFormats">
+                                    <!-- Format video akan ditampilkan di sini -->
+                                </div>
+
+                                <div class="format-list" id="audioFormats" style="display: none;">
+                                    <!-- Format audio akan ditampilkan di sini -->
+                                </div>
+
+                                <button id="downloadBtn" class="btn btn-success btn-lg w-100 mt-3">Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center" id="downloadProgress" style="display: none;">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="h5 mb-0">Proses Download</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="progress-container">
+                                <div class="progress mb-2" style="height: 25px;">
+                                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-bar-text">
+                                    <span id="progressText">0%</span>
+                                </div>
+                            </div>
+
+                            <div class="log-container">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h4 class="h6 mb-0">Log Proses</h4>
+                                    <button id="toggleLog" class="btn btn-sm btn-outline-secondary">-</button>
+                                </div>
+
+                                <div class="log-content" id="logContent">
+                                    <pre id="logText"></pre>
+                                </div>
+                            </div>
+
+                            <div class="progress-info mt-3">
+                                <p id="fileName">Nama file: Belum diketahui</p>
+                                <p id="fileSize">Ukuran: Belum diketahui</p>
+                                <p id="speed">Kecepatan: Belum diketahui</p>
+                                <p id="eta">Perkiraan Selesai: Belum diketahui</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
