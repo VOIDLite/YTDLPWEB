@@ -97,7 +97,7 @@
                             <form id="urlForm">
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">URL Video</span>
-                                    <input type="url" id="videoUrl" name="videoUrl" class="form-control" required placeholder="https://www.youtube.com/watch?v=...">
+                                    <input type="url" id="videoUrl" name="videoUrl" class="form-control" required placeholder="https://www.youtube.com/watch?v=..." aria-label="URL Video">
                                     <button type="submit" class="btn btn-primary">Dapatkan Info Video</button>
                                 </div>
                             </form>
@@ -179,7 +179,7 @@
                             <div class="log-container">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <h4 class="h6 mb-0">Log Proses</h4>
-                                    <button id="toggleLog" class="btn btn-sm btn-outline-secondary">-</button>
+                                    <button id="toggleLog" class="btn btn-sm btn-outline-secondary" aria-expanded="true" aria-controls="logContent">-</button>
                                 </div>
 
                                 <div class="log-content" id="logContent">
