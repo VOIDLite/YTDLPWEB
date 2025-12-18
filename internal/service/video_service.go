@@ -71,7 +71,7 @@ func (s *VideoService) getVideoInfoFromYtDlp(url string) (*model.VideoInfo, erro
 	// Buat perintah yt-dlp untuk mendapatkan info video
 	cmd := exec.Command("yt-dlp", "-j", "--no-playlist", url)
 	
-	output, err := cmd.Output()
+	_, err := cmd.Output()
 	if err != nil {
 		return nil, fmt.Errorf("gagal menjalankan yt-dlp: %v", err)
 	}

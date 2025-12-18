@@ -43,12 +43,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Toggle log visibility
     toggleLog.addEventListener('click', () => {
         const logContent = document.getElementById('logContent');
-        if (logContent.style.display === 'none' || !logContent.style.display) {
+        if (logContent.style.display === 'none') {
             logContent.style.display = 'block';
             toggleLog.textContent = '-';
+            toggleLog.setAttribute('aria-expanded', 'true');
         } else {
             logContent.style.display = 'none';
             toggleLog.textContent = '+';
+            toggleLog.setAttribute('aria-expanded', 'false');
         }
     });
 
@@ -141,8 +143,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         formats.forEach(format => {
-            const formatElement = document.createElement('div');
-            formatElement.className = 'format-item p-2 mb-2 border rounded';
+            const formatElement = document.createElement('button');
+            formatElement.type = 'button';
+            formatElement.className = 'format-item p-2 mb-2 border rounded w-100 text-start';
+            formatElement.setAttribute('aria-pressed', 'false');
             formatElement.innerHTML = `
                 <div class="format-details d-flex justify-content-between align-items-center">
                     <span><strong>${format.format_id}</strong> - ${format.ext} - ${format.resolution || 'Audio only'}</span>
@@ -155,10 +159,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Remove selection from other items
                 document.querySelectorAll('#' + containerId + ' .format-item').forEach(item => {
                     item.classList.remove('border-primary', 'bg-light');
+                    item.setAttribute('aria-pressed', 'false');
                 });
 
                 // Select this item
                 formatElement.classList.add('border-primary', 'bg-light');
+                formatElement.setAttribute('aria-pressed', 'true');
 
                 // Store selected format in data attribute
                 document.getElementById('downloadBtn').dataset.selectedFormat = format.format_id;
